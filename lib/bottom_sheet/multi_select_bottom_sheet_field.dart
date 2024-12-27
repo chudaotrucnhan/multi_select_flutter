@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/extensions/box_decoration_extensions.dart';
 import '../util/multi_select_list_type.dart';
 import '../chip_display/multi_select_chip_display.dart';
 import '../util/multi_select_item.dart';
@@ -10,6 +11,9 @@ import 'multi_select_bottom_sheet.dart';
 class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Style the Container that makes up the field.
   final BoxDecoration? decoration;
+
+  /// Style the Container that makes up the field error.
+  final BoxDecoration? erroDecoration;
 
   /// Set text that is displayed on the button.
   final Text? buttonText;
@@ -128,6 +132,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.buttonIcon,
     this.listType,
     this.decoration,
+    this.erroDecoration,
     this.onSelectionChanged,
     this.chipDisplay,
     this.initialValue = const [],
@@ -171,6 +176,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                   _MultiSelectBottomSheetFieldView<V>(
                 items: items,
                 decoration: decoration,
+                erroDecoration: erroDecoration,
                 unselectedColor: unselectedColor,
                 colorator: colorator,
                 itemsTextStyle: itemsTextStyle,
@@ -213,6 +219,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
 // ignore: must_be_immutable
 class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final BoxDecoration? decoration;
+  final BoxDecoration? erroDecoration;
   final Text? buttonText;
   final Icon? buttonIcon;
   final List<MultiSelectItem<V>> items;
@@ -256,6 +263,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     this.buttonIcon,
     this.listType,
     this.decoration,
+    this.erroDecoration,
     this.onSelectionChanged,
     this.onConfirm,
     this.chipDisplay,
@@ -296,6 +304,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         buttonIcon = field.buttonIcon,
         listType = field.listType,
         decoration = field.decoration,
+        erroDecoration = field.erroDecoration,
         onSelectionChanged = field.onSelectionChanged,
         onConfirm = field.onConfirm,
         chipDisplay = field.chipDisplay,
@@ -458,22 +467,15 @@ class __MultiSelectBottomSheetFieldViewState<V>
             maxChildSize: widget.maxChildSize,
           );
         });
-    print(myVar.toString());
+    // print(myVar.toString());
     _selectedItems = myVar!;
   }
 
   Widget displayErrorUI() {
-    print('display error');
-    print(widget.state);
-    print(widget.state!.hasError);
-    print(widget.errorUI);
     if (widget.state != null && widget.state!.hasError) {
-      print('step 1');
       if (widget?.errorUI != null) {
-        print('step 2');
         return widget.errorUI!(widget.state!.errorText!);
       }
-      print('step 3');
       return Row(
         children: <Widget>[
           Padding(
@@ -493,8 +495,58 @@ class __MultiSelectBottomSheetFieldViewState<V>
         ],
       );
     }
-    print('step 4');
     return Container();
+  }
+
+  BoxDecoration? getDecoration() {
+    if (widget.state != null) {
+      BoxDecoration defaultDecoration = BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: _selectedItems.isNotEmpty
+                ? (widget.selectedColor != null &&
+                        widget.selectedColor != Colors.transparent)
+                    ? widget.selectedColor!
+                    : Theme.of(context).primaryColor
+                : Colors.black45,
+            width: _selectedItems.isNotEmpty ? 1.8 : 1.2,
+          ),
+        ),
+      ).merge(widget.decoration);
+      BoxDecoration defaultDecorationError = BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.red.shade800.withOpacity(0.6),
+            width: 1.4,
+          ),
+        ),
+      ).merge(widget.erroDecoration);
+      if(widget.state != null && widget.state!.hasError){
+        return defaultDecorationError;
+      }
+      return defaultDecoration;
+      // return widget.decoration ??
+      //     BoxDecoration(
+      //       border: Border(
+      //         bottom: BorderSide(
+      //           color: widget.state != null && widget.state!.hasError
+      //               ? Colors.red.shade800.withOpacity(0.6)
+      //               : _selectedItems.isNotEmpty
+      //                   ? (widget.selectedColor != null &&
+      //                           widget.selectedColor != Colors.transparent)
+      //                       ? widget.selectedColor!
+      //                       : Theme.of(context).primaryColor
+      //                   : Colors.black45,
+      //           width: _selectedItems.isNotEmpty
+      //               ? (widget.state != null && widget.state!.hasError)
+      //                   ? 1.4
+      //                   : 1.8
+      //               : 1.2,
+      //         ),
+      //       ),
+      //     );
+    }
+    return widget.decoration;
   }
 
   @override
@@ -507,29 +559,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             _showBottomSheet(context);
           },
           child: Container(
-            decoration: widget.state != null
-                ? widget.decoration ??
-                    BoxDecoration(
-                      border: Border(
-                        bottom: BorderSide(
-                          color: widget.state != null && widget.state!.hasError
-                              ? Colors.red.shade800.withOpacity(0.6)
-                              : _selectedItems.isNotEmpty
-                                  ? (widget.selectedColor != null &&
-                                          widget.selectedColor !=
-                                              Colors.transparent)
-                                      ? widget.selectedColor!
-                                      : Theme.of(context).primaryColor
-                                  : Colors.black45,
-                          width: _selectedItems.isNotEmpty
-                              ? (widget.state != null && widget.state!.hasError)
-                                  ? 1.4
-                                  : 1.8
-                              : 1.2,
-                        ),
-                      ),
-                    )
-                : widget.decoration,
+            decoration: getDecoration(),
             padding: EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
