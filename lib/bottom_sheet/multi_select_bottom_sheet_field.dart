@@ -42,7 +42,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   final Text? cancelText;
 
   /// Color on the empty selected object
-  final Text? errorTextColor;
+  final Color? errorTextColor;
 
   /// Style of the error text
   final TextStyle? errorTextStyle;
@@ -232,7 +232,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final Color Function(V)? colorator;
   final Color? backgroundColor;
   final Color? unselectedColor;
-  final Color? errorColor;
+  final Color? errorTextColor;
   final TextStyle? errorTextStyle;
   final Widget Function(String)? errorUI;
   final Icon? searchIcon;
@@ -270,7 +270,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     this.colorator,
     this.backgroundColor,
     this.unselectedColor,
-    this.errorColor,
+    this.errorTextColor,
     this.errorTextStyle,
     this.errorUI,
     this.searchIcon,
@@ -310,7 +310,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         colorator = field.colorator,
         backgroundColor = field.backgroundColor,
         unselectedColor = field.unselectedColor,
-        errorColor = field.errorColor,
+        errorTextColor = field.errorTextColor,
         errorTextStyle = field.errorTextStyle,
         errorUI = field.errorUI,
         searchIcon = field.searchIcon,
@@ -473,8 +473,8 @@ class __MultiSelectBottomSheetFieldViewState<V>
               style: widget.errorTextStyle != null
                   ? widget.errorTextStyle
                   : TextStyle(
-                      color: widget.errorColor != null
-                          ? widget.errorColor
+                      color: widget.errorTextColor != null
+                          ? widget.errorTextColor
                           : Colors.red[800],
                       fontSize: 12.5,
                     ),
