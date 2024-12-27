@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import 'package:multi_select_flutter/theme/lib_theme.dart';
 import 'package:multi_select_flutter/widget/button_elevated.dart';
 import '../util/multi_select_item.dart';
 import '../util/multi_select_actions.dart';
@@ -354,6 +356,90 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
     );
   }
 
+  Widget getSearchUI() {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        bottom: 10,
+      ),
+      child: Container(
+        decoration: BoxDecoration(color: Colors.transparent),
+        height: 40,
+        child: Row(
+          children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: 0),
+                child: Container(
+                  decoration: BoxDecoration(
+                      color: LibTheme.white,
+                      borderRadius: BorderRadius.all(Radius.circular(8)),
+                      border: Border.all(
+                          color: LibTheme.borderColor,
+                          width: LibTheme.borderWidth)),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 0, right: 10),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.transparent),
+                      child: Row(
+                        children: [
+                          SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: DecoratedBox(
+                                decoration:
+                                    BoxDecoration(color: Colors.transparent),
+                                child: Icon(
+                                  LucideIcons.search,
+                                  color: LibTheme.iconColor,
+                                  size: LibTheme.iconSize,
+                                ),
+                              )),
+                          Expanded(
+                            flex: 1,
+                            child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 2.5),
+                                  child: TextField(
+                                    onChanged: (val) {
+                                      List<MultiSelectItem<T>> filteredList =
+                                          [];
+                                      filteredList = widget.updateSearchQuery(
+                                          val, widget.items);
+                                      setState(() {
+                                        if (widget.separateSelectedItems) {
+                                          _items = widget
+                                              .separateSelected(filteredList);
+                                        } else {
+                                          _items = filteredList;
+                                        }
+                                      });
+                                    },
+                                    decoration: InputDecoration(
+                                      hintStyle: widget.searchHintStyle ??
+                                          TextStyle(color: LibTheme.hintColor),
+                                      hintText: widget.searchHint ?? "Search",
+                                    ),
+                                  ),
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget searchBarUI() {
     return Padding(
       padding: const EdgeInsets.all(10),
@@ -403,7 +489,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
       child: Row(
         children: [
           ButtonElevated(
-            width: 50,
+            size: null,
             onPressed: () {
               widget.onCancelTap(context, widget.initialValue);
             },
@@ -425,7 +511,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                 ),
           )),
           ButtonElevated(
-            width: 50,
+            size: null,
             onPressed: () {
               widget.onConfirmTap(context, _selectedValues, widget.onConfirm);
             },
@@ -453,7 +539,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
             children: [
               modalTopUI(),
               // searchBarUI(),
-              searchUI(),
+              getSearchUI(),
               Expanded(
                 child: widget.listType == null ||
                         widget.listType == MultiSelectListType.LIST
