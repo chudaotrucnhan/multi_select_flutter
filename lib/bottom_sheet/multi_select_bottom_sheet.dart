@@ -79,32 +79,35 @@ class MultiSelectBottomSheet<T> extends StatefulWidget
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
-  MultiSelectBottomSheet({
-    required this.items,
-    required this.initialValue,
-    this.title,
-    this.onSelectionChanged,
-    this.onConfirm,
-    this.listType,
-    this.cancelText,
-    this.confirmText,
-    this.searchable = false,
-    this.selectedColor,
-    this.initialChildSize,
-    this.minChildSize,
-    this.maxChildSize,
-    this.colorator,
-    this.unselectedColor,
-    this.searchIcon,
-    this.closeSearchIcon,
-    this.itemsTextStyle,
-    this.searchTextStyle,
-    this.searchHint,
-    this.searchHintStyle,
-    this.selectedItemsTextStyle,
-    this.separateSelectedItems = false,
-    this.checkColor,
-  });
+  final CheckboxListTile Function(
+      MultiSelectItem<T>, Function(MultiSelectItem<T>, bool?))? listItemUI;
+
+  MultiSelectBottomSheet(
+      {required this.items,
+      required this.initialValue,
+      this.title,
+      this.onSelectionChanged,
+      this.onConfirm,
+      this.listType,
+      this.cancelText,
+      this.confirmText,
+      this.searchable = false,
+      this.selectedColor,
+      this.initialChildSize,
+      this.minChildSize,
+      this.maxChildSize,
+      this.colorator,
+      this.unselectedColor,
+      this.searchIcon,
+      this.closeSearchIcon,
+      this.itemsTextStyle,
+      this.searchTextStyle,
+      this.searchHint,
+      this.searchHintStyle,
+      this.selectedItemsTextStyle,
+      this.separateSelectedItems = false,
+      this.checkColor,
+      this.listItemUI});
 
   @override
   _MultiSelectBottomSheetState<T> createState() =>
@@ -135,44 +138,83 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
     }
   }
 
+  void onChanged(MultiSelectItem<T> item, bool? checked) {
+    setState(() {
+      _selectedValues =
+          widget.onItemCheckedChange(_selectedValues, item.value, checked!);
+
+      if (checked) {
+        item.selected = true;
+      } else {
+        item.selected = false;
+      }
+      if (widget.separateSelectedItems) {
+        _items = widget.separateSelected(_items);
+      }
+    });
+    if (widget.onSelectionChanged != null) {
+      widget.onSelectionChanged!(_selectedValues);
+    }
+  }
+
   /// Returns a CheckboxListTile
   Widget _buildListItem(MultiSelectItem<T> item) {
+    CheckboxListTile listItem = CheckboxListTile(
+      checkColor: widget.checkColor,
+      value: item.selected,
+      activeColor: widget.colorator != null
+          ? widget.colorator!(item.value) ?? widget.selectedColor
+          : widget.selectedColor,
+      title: Text(
+        item.label,
+        style: item.selected
+            ? widget.selectedItemsTextStyle
+            : widget.itemsTextStyle,
+      ),
+      controlAffinity: ListTileControlAffinity.leading,
+      onChanged: (checked) {
+        onChanged(item, checked);
+      },
+    );
+
     return Theme(
       data: ThemeData(
         unselectedWidgetColor: widget.unselectedColor ?? Colors.black54,
       ),
-      child: CheckboxListTile(
-        checkColor: widget.checkColor,
-        value: item.selected,
-        activeColor: widget.colorator != null
-            ? widget.colorator!(item.value) ?? widget.selectedColor
-            : widget.selectedColor,
-        title: Text(
-          item.label,
-          style: item.selected
-              ? widget.selectedItemsTextStyle
-              : widget.itemsTextStyle,
-        ),
-        controlAffinity: ListTileControlAffinity.leading,
-        onChanged: (checked) {
-          setState(() {
-            _selectedValues = widget.onItemCheckedChange(
-                _selectedValues, item.value, checked!);
+      child: widget.listItemUI != null
+          ? widget.listItemUI!(item, onChanged)
+          : CheckboxListTile(
+              checkColor: widget.checkColor,
+              value: item.selected,
+              activeColor: widget.colorator != null
+                  ? widget.colorator!(item.value) ?? widget.selectedColor
+                  : widget.selectedColor,
+              title: Text(
+                item.label,
+                style: item.selected
+                    ? widget.selectedItemsTextStyle
+                    : widget.itemsTextStyle,
+              ),
+              controlAffinity: ListTileControlAffinity.leading,
+              onChanged: (checked) {
+                setState(() {
+                  _selectedValues = widget.onItemCheckedChange(
+                      _selectedValues, item.value, checked!);
 
-            if (checked) {
-              item.selected = true;
-            } else {
-              item.selected = false;
-            }
-            if (widget.separateSelectedItems) {
-              _items = widget.separateSelected(_items);
-            }
-          });
-          if (widget.onSelectionChanged != null) {
-            widget.onSelectionChanged!(_selectedValues);
-          }
-        },
-      ),
+                  if (checked) {
+                    item.selected = true;
+                  } else {
+                    item.selected = false;
+                  }
+                  if (widget.separateSelectedItems) {
+                    _items = widget.separateSelected(_items);
+                  }
+                });
+                if (widget.onSelectionChanged != null) {
+                  widget.onSelectionChanged!(_selectedValues);
+                }
+              },
+            ),
     );
   }
 

@@ -118,54 +118,58 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Whether the user can dismiss the widget by tapping outside
   final bool isDismissible;
 
+  final CheckboxListTile Function(
+      MultiSelectItem<V>, Function(MultiSelectItem<V>, bool?))? listItemUI;
+
   final AutovalidateMode autovalidateMode;
   final FormFieldValidator<List<V>>? validator;
   final FormFieldSetter<List<V>>? onSaved;
   final GlobalKey<FormFieldState>? key;
   FormFieldState<List<V>>? state;
 
-  MultiSelectBottomSheetField({
-    required this.items,
-    required this.onConfirm,
-    this.title,
-    this.buttonText,
-    this.buttonIcon,
-    this.listType,
-    this.decoration,
-    this.erroDecoration,
-    this.onSelectionChanged,
-    this.chipDisplay,
-    this.initialValue = const [],
-    this.searchable = false,
-    this.confirmText,
-    this.cancelText,
-    this.errorTextColor,
-    this.errorTextStyle,
-    this.errorUI,
-    this.selectedColor,
-    this.initialChildSize,
-    this.minChildSize,
-    this.maxChildSize,
-    this.shape,
-    this.barrierColor,
-    this.searchHint,
-    this.colorator,
-    this.backgroundColor,
-    this.unselectedColor,
-    this.searchIcon,
-    this.closeSearchIcon,
-    this.itemsTextStyle,
-    this.searchTextStyle,
-    this.searchHintStyle,
-    this.selectedItemsTextStyle,
-    this.separateSelectedItems = false,
-    this.checkColor,
-    this.isDismissible = true,
-    this.key,
-    this.onSaved,
-    this.validator,
-    this.autovalidateMode = AutovalidateMode.disabled,
-  }) : super(
+  MultiSelectBottomSheetField(
+      {required this.items,
+      required this.onConfirm,
+      this.title,
+      this.buttonText,
+      this.buttonIcon,
+      this.listType,
+      this.decoration,
+      this.erroDecoration,
+      this.onSelectionChanged,
+      this.chipDisplay,
+      this.initialValue = const [],
+      this.searchable = false,
+      this.confirmText,
+      this.cancelText,
+      this.errorTextColor,
+      this.errorTextStyle,
+      this.errorUI,
+      this.selectedColor,
+      this.initialChildSize,
+      this.minChildSize,
+      this.maxChildSize,
+      this.shape,
+      this.barrierColor,
+      this.searchHint,
+      this.colorator,
+      this.backgroundColor,
+      this.unselectedColor,
+      this.searchIcon,
+      this.closeSearchIcon,
+      this.itemsTextStyle,
+      this.searchTextStyle,
+      this.searchHintStyle,
+      this.selectedItemsTextStyle,
+      this.separateSelectedItems = false,
+      this.checkColor,
+      this.isDismissible = true,
+      this.key,
+      this.onSaved,
+      this.validator,
+      this.autovalidateMode = AutovalidateMode.disabled,
+      this.listItemUI})
+      : super(
             key: key,
             onSaved: onSaved,
             validator: validator,
@@ -210,6 +214,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                 shape: shape,
                 checkColor: checkColor,
                 isDismissible: isDismissible,
+                listItemUI: listItemUI,
               );
               return _MultiSelectBottomSheetFieldView<V?>._withState(
                   view as _MultiSelectBottomSheetFieldView<V?>, state);
@@ -254,6 +259,8 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final bool separateSelectedItems;
   final Color? checkColor;
   final bool isDismissible;
+  final CheckboxListTile Function(
+      MultiSelectItem<V>, Function(MultiSelectItem<V>, bool?))? listItemUI;
   FormFieldState<List<V>>? state;
 
   _MultiSelectBottomSheetFieldView({
@@ -293,6 +300,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     required this.separateSelectedItems,
     this.checkColor,
     required this.isDismissible,
+    this.listItemUI,
   });
 
   /// This constructor allows a FormFieldState to be passed in. Called by MultiSelectBottomSheetField.
@@ -334,6 +342,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         separateSelectedItems = field.separateSelectedItems,
         checkColor = field.checkColor,
         isDismissible = field.isDismissible,
+        listItemUI = field.listItemUI,
         state = state;
 
   @override
@@ -465,6 +474,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             initialChildSize: widget.initialChildSize,
             minChildSize: widget.minChildSize,
             maxChildSize: widget.maxChildSize,
+            listItemUI: widget.listItemUI,
           );
         });
     // print(myVar.toString());
@@ -521,7 +531,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
           ),
         ),
       ).merge(widget.erroDecoration);
-      if(widget.state != null && widget.state!.hasError){
+      if (widget.state != null && widget.state!.hasError) {
         return defaultDecorationError;
       }
       return defaultDecoration;
