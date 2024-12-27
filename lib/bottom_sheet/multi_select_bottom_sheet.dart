@@ -79,35 +79,39 @@ class MultiSelectBottomSheet<T> extends StatefulWidget
   /// Set the color of the check in the checkbox
   final Color? checkColor;
 
-  final CheckboxListTile Function(
+  final Widget Function(
       MultiSelectItem<T>, Function(MultiSelectItem<T>, bool?))? listItemUI;
 
-  MultiSelectBottomSheet(
-      {required this.items,
-      required this.initialValue,
-      this.title,
-      this.onSelectionChanged,
-      this.onConfirm,
-      this.listType,
-      this.cancelText,
-      this.confirmText,
-      this.searchable = false,
-      this.selectedColor,
-      this.initialChildSize,
-      this.minChildSize,
-      this.maxChildSize,
-      this.colorator,
-      this.unselectedColor,
-      this.searchIcon,
-      this.closeSearchIcon,
-      this.itemsTextStyle,
-      this.searchTextStyle,
-      this.searchHint,
-      this.searchHintStyle,
-      this.selectedItemsTextStyle,
-      this.separateSelectedItems = false,
-      this.checkColor,
-      this.listItemUI});
+  final Widget Function(Function, Function)? actionBarUI;
+
+  MultiSelectBottomSheet({
+    required this.items,
+    required this.initialValue,
+    this.title,
+    this.onSelectionChanged,
+    this.onConfirm,
+    this.listType,
+    this.cancelText,
+    this.confirmText,
+    this.searchable = false,
+    this.selectedColor,
+    this.initialChildSize,
+    this.minChildSize,
+    this.maxChildSize,
+    this.colorator,
+    this.unselectedColor,
+    this.searchIcon,
+    this.closeSearchIcon,
+    this.itemsTextStyle,
+    this.searchTextStyle,
+    this.searchHint,
+    this.searchHintStyle,
+    this.selectedItemsTextStyle,
+    this.separateSelectedItems = false,
+    this.checkColor,
+    this.listItemUI,
+    this.actionBarUI,
+  });
 
   @override
   _MultiSelectBottomSheetState<T> createState() =>
@@ -197,22 +201,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
               ),
               controlAffinity: ListTileControlAffinity.leading,
               onChanged: (checked) {
-                setState(() {
-                  _selectedValues = widget.onItemCheckedChange(
-                      _selectedValues, item.value, checked!);
-
-                  if (checked) {
-                    item.selected = true;
-                  } else {
-                    item.selected = false;
-                  }
-                  if (widget.separateSelectedItems) {
-                    _items = widget.separateSelected(_items);
-                  }
-                });
-                if (widget.onSelectionChanged != null) {
-                  widget.onSelectionChanged!(_selectedValues);
-                }
+                onChanged(item, checked);
               },
             ),
     );
@@ -260,6 +249,72 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
           }
         },
       ),
+    );
+  }
+
+  Widget actionsBar() {
+    if (widget.actionBarUI != null) {
+      return widget.actionBarUI!(
+        () {
+          widget.onCancelTap(context, widget.initialValue);
+        },
+        () {
+          widget.onConfirmTap(context, _selectedValues, widget.onConfirm);
+        },
+      );
+    }
+    return Container(
+      padding: EdgeInsets.all(2),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: TextButton(
+              onPressed: () {
+                widget.onCancelTap(context, widget.initialValue);
+              },
+              child: widget.cancelText ??
+                  Text(
+                    "CANCEL",
+                    style: TextStyle(
+                      color: (widget.selectedColor != null &&
+                              widget.selectedColor != Colors.transparent)
+                          ? widget.selectedColor!.withOpacity(1)
+                          : Theme.of(context).primaryColor,
+                    ),
+                  ),
+            ),
+          ),
+          SizedBox(width: 10),
+          Expanded(
+            child: TextButton(
+              onPressed: () {
+                widget.onConfirmTap(context, _selectedValues, widget.onConfirm);
+              },
+              child: widget.confirmText ??
+                  Text(
+                    "OK",
+                    style: TextStyle(
+                      color: (widget.selectedColor != null &&
+                              widget.selectedColor != Colors.transparent)
+                          ? widget.selectedColor!.withOpacity(1)
+                          : Theme.of(context).primaryColor,
+                    ),
+                  ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget typeListUI(ScrollController scrollController) {
+    return ListView.builder(
+      controller: scrollController,
+      itemCount: _items.length,
+      itemBuilder: (context, index) {
+        return _buildListItem(_items[index]);
+      },
     );
   }
 
@@ -346,13 +401,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
               Expanded(
                 child: widget.listType == null ||
                         widget.listType == MultiSelectListType.LIST
-                    ? ListView.builder(
-                        controller: scrollController,
-                        itemCount: _items.length,
-                        itemBuilder: (context, index) {
-                          return _buildListItem(_items[index]);
-                        },
-                      )
+                    ? typeListUI(scrollController)
                     : SingleChildScrollView(
                         controller: scrollController,
                         child: Container(
@@ -363,52 +412,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                         ),
                       ),
               ),
-              Container(
-                padding: EdgeInsets.all(2),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          widget.onCancelTap(context, widget.initialValue);
-                        },
-                        child: widget.cancelText ??
-                            Text(
-                              "CANCEL",
-                              style: TextStyle(
-                                color: (widget.selectedColor != null &&
-                                        widget.selectedColor !=
-                                            Colors.transparent)
-                                    ? widget.selectedColor!.withOpacity(1)
-                                    : Theme.of(context).primaryColor,
-                              ),
-                            ),
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: TextButton(
-                        onPressed: () {
-                          widget.onConfirmTap(
-                              context, _selectedValues, widget.onConfirm);
-                        },
-                        child: widget.confirmText ??
-                            Text(
-                              "OK",
-                              style: TextStyle(
-                                color: (widget.selectedColor != null &&
-                                        widget.selectedColor !=
-                                            Colors.transparent)
-                                    ? widget.selectedColor!.withOpacity(1)
-                                    : Theme.of(context).primaryColor,
-                              ),
-                            ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              actionsBar(),
             ],
           );
         },

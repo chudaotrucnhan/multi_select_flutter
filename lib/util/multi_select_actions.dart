@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tiengviet/tiengviet.dart';
 import 'multi_select_item.dart';
 
 /// Contains common actions that are used by different multi select classes.
@@ -35,7 +36,7 @@ class MultiSelectActions<T> {
     if (val != null && val.trim().isNotEmpty) {
       List<MultiSelectItem<T>> filteredItems = [];
       for (var item in allItems) {
-        if (item.label.toLowerCase().contains(val.toLowerCase())) {
+        if (TiengViet.parse(item.label.toLowerCase()).contains(TiengViet.parse(val).toLowerCase())) {
           filteredItems.add(item);
         }
       }
