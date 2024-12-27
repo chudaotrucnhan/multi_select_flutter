@@ -460,6 +460,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
   }
 
   Widget displayErrorUI() {
+    print('display error');
     if (widget.state != null && widget.state!.hasError) {
       if (widget.errorUI != null) {
         return widget.errorUI!(widget.state!.errorText!);
@@ -488,6 +489,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
 
   @override
   Widget build(BuildContext context) {
+    print('here');
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
