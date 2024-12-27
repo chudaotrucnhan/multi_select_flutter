@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:multi_select_flutter/widget/button_elevated.dart';
 import '../util/multi_select_item.dart';
 import '../util/multi_select_actions.dart';
 import '../util/multi_select_list_type.dart';
@@ -318,6 +319,125 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
     );
   }
 
+  Widget searchUI() {
+    if (!widget.searchable) {
+      return SizedBox();
+    }
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.only(left: 10),
+        child: TextField(
+          autofocus: true,
+          style: widget.searchTextStyle,
+          decoration: InputDecoration(
+            hintStyle: widget.searchHintStyle,
+            hintText: widget.searchHint ?? "Search",
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(
+                  color:
+                      widget.selectedColor ?? Theme.of(context).primaryColor),
+            ),
+          ),
+          onChanged: (val) {
+            List<MultiSelectItem<T>> filteredList = [];
+            filteredList = widget.updateSearchQuery(val, widget.items);
+            setState(() {
+              if (widget.separateSelectedItems) {
+                _items = widget.separateSelected(filteredList);
+              } else {
+                _items = filteredList;
+              }
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget searchBarUI() {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _showSearch
+              ? searchUI()
+              : widget.title ?? Text("Select", style: TextStyle(fontSize: 18)),
+          widget.searchable
+              ? IconButton(
+                  icon: _showSearch
+                      ? widget.closeSearchIcon ?? Icon(Icons.close)
+                      : widget.searchIcon ?? Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      _showSearch = !_showSearch;
+                      if (!_showSearch) {
+                        if (widget.separateSelectedItems) {
+                          _items = widget.separateSelected(widget.items);
+                        } else {
+                          _items = widget.items;
+                        }
+                      }
+                    });
+                  },
+                )
+              : Padding(
+                  padding: EdgeInsets.all(15),
+                ),
+        ],
+      ),
+    );
+  }
+
+  Widget modalTopUI() {
+    TextStyle buttonLabel = TextStyle(
+      // fontFamily: appFontName,
+      fontWeight: FontWeight.w500,
+      fontSize: 14,
+      // color: colorPrimary,
+    );
+    return Container(
+      height: 50,
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      color: Colors.transparent,
+      child: Row(
+        children: [
+          ButtonElevated(
+            width: 50,
+            onPressed: () {
+              widget.onCancelTap(context, widget.initialValue);
+            },
+            backgroundColor: Colors.transparent,
+            borderColor: Colors.transparent,
+            child: widget.cancelText ?? Text("CANCEL", style: buttonLabel),
+          ),
+          Expanded(
+              child: Center(
+            child: widget.title ??
+                Text(
+                  'Select',
+                  style: TextStyle(
+                    // fontFamily: appFontName,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    // color: titleColor,
+                  ),
+                ),
+          )),
+          ButtonElevated(
+            width: 50,
+            onPressed: () {
+              widget.onConfirmTap(context, _selectedValues, widget.onConfirm);
+            },
+            backgroundColor: Colors.transparent,
+            borderColor: Colors.transparent,
+            child: widget.confirmText ?? Text("OK", style: buttonLabel),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -331,73 +451,9 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
         builder: (BuildContext context, ScrollController scrollController) {
           return Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _showSearch
-                        ? Expanded(
-                            child: Container(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: TextField(
-                                autofocus: true,
-                                style: widget.searchTextStyle,
-                                decoration: InputDecoration(
-                                  hintStyle: widget.searchHintStyle,
-                                  hintText: widget.searchHint ?? "Search",
-                                  focusedBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: widget.selectedColor ??
-                                            Theme.of(context).primaryColor),
-                                  ),
-                                ),
-                                onChanged: (val) {
-                                  List<MultiSelectItem<T>> filteredList = [];
-                                  filteredList = widget.updateSearchQuery(
-                                      val, widget.items);
-                                  setState(() {
-                                    if (widget.separateSelectedItems) {
-                                      _items =
-                                          widget.separateSelected(filteredList);
-                                    } else {
-                                      _items = filteredList;
-                                    }
-                                  });
-                                },
-                              ),
-                            ),
-                          )
-                        : widget.title ??
-                            Text(
-                              "Select",
-                              style: TextStyle(fontSize: 18),
-                            ),
-                    widget.searchable
-                        ? IconButton(
-                            icon: _showSearch
-                                ? widget.closeSearchIcon ?? Icon(Icons.close)
-                                : widget.searchIcon ?? Icon(Icons.search),
-                            onPressed: () {
-                              setState(() {
-                                _showSearch = !_showSearch;
-                                if (!_showSearch) {
-                                  if (widget.separateSelectedItems) {
-                                    _items =
-                                        widget.separateSelected(widget.items);
-                                  } else {
-                                    _items = widget.items;
-                                  }
-                                }
-                              });
-                            },
-                          )
-                        : Padding(
-                            padding: EdgeInsets.all(15),
-                          ),
-                  ],
-                ),
-              ),
+              modalTopUI(),
+              // searchBarUI(),
+              searchUI(),
               Expanded(
                 child: widget.listType == null ||
                         widget.listType == MultiSelectListType.LIST
