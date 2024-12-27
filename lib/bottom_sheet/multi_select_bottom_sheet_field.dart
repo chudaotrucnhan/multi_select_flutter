@@ -182,6 +182,9 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                 buttonIcon: buttonIcon,
                 buttonText: buttonText,
                 cancelText: cancelText,
+                errorTextColor: errorTextColor,
+                errorTextStyle: errorTextStyle,
+                errorUI: errorUI,
                 chipDisplay: chipDisplay,
                 closeSearchIcon: closeSearchIcon,
                 confirmText: confirmText,
@@ -466,7 +469,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
     print(widget.errorUI);
     if (widget.state != null && widget.state!.hasError) {
       print('step 1');
-      if (widget.errorUI != null) {
+      if (widget?.errorUI != null) {
         print('step 2');
         return widget.errorUI!(widget.state!.errorText!);
       }
