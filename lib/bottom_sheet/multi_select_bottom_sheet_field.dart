@@ -47,6 +47,8 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   /// Style of the error text
   final TextStyle? errorTextStyle;
 
+  final Widget Function(String)? errorUI;
+
   /// An enum that determines which type of list to render.
   final MultiSelectListType? listType;
 
@@ -134,6 +136,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.cancelText,
     this.errorTextColor,
     this.errorTextStyle,
+    this.errorUI,
     this.selectedColor,
     this.initialChildSize,
     this.minChildSize,
