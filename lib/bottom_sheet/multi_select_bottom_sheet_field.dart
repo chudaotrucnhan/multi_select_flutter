@@ -461,10 +461,16 @@ class __MultiSelectBottomSheetFieldViewState<V>
 
   Widget displayErrorUI() {
     print('display error');
+    print(widget.state);
+    print(widget.state!.hasError);
+    print(widget.errorUI);
     if (widget.state != null && widget.state!.hasError) {
+      print('step 1');
       if (widget.errorUI != null) {
+        print('step 2');
         return widget.errorUI!(widget.state!.errorText!);
       }
+      print('step 3');
       return Row(
         children: <Widget>[
           Padding(
@@ -484,12 +490,12 @@ class __MultiSelectBottomSheetFieldViewState<V>
         ],
       );
     }
+    print('step 4');
     return Container();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('here');
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: <Widget>[
@@ -535,7 +541,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
         widget.state != null && widget.state!.hasError
             ? SizedBox(height: 5)
             : Container(),
-        // displayErrorUI()
+        displayErrorUI()
       ],
     );
   }
