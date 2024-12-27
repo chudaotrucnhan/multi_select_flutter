@@ -535,7 +535,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
         widget.state != null && widget.state!.hasError
             ? SizedBox(height: 5)
             : Container(),
-        displayErrorUI()
+        // displayErrorUI()
       ],
     );
   }
