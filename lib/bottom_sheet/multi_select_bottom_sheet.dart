@@ -420,6 +420,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
                                       });
                                     },
                                     decoration: InputDecoration(
+                                      border: InputBorder.none,
                                       hintStyle: widget.searchHintStyle ??
                                           TextStyle(color: LibTheme.hintColor),
                                       hintText: widget.searchHint ?? "Search",
@@ -484,7 +485,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
     );
     return Container(
       height: 50,
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: EdgeInsets.symmetric(horizontal: 0),
       color: Colors.transparent,
       child: Row(
         children: [
