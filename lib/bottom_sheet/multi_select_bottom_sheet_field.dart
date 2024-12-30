@@ -124,7 +124,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     Function(MultiSelectItem<V>, bool?),
   )? listItemUI;
 
-  final Widget Function(Function, Function)? actionBarUI;
+  final Widget Function(Function, Function)? actionTopBarUI;
 
   final AutovalidateMode autovalidateMode;
   final FormFieldValidator<List<V>>? validator;
@@ -174,7 +174,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.validator,
     this.autovalidateMode = AutovalidateMode.disabled,
     this.listItemUI,
-    this.actionBarUI,
+    this.actionTopBarUI,
   }) : super(
             key: key,
             onSaved: onSaved,
@@ -221,7 +221,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                 checkColor: checkColor,
                 isDismissible: isDismissible,
                 listItemUI: listItemUI,
-                actionBarUI: actionBarUI,
+                actionTopBarUI:actionTopBarUI,
               );
               return _MultiSelectBottomSheetFieldView<V?>._withState(
                   view as _MultiSelectBottomSheetFieldView<V?>, state);
@@ -272,7 +272,8 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     Function(MultiSelectItem<V>, bool?),
   )? listItemUI;
 
-  final Widget Function(Function, Function)? actionBarUI;
+  final Widget Function(Function, Function)? actionTopBarUI;
+
   FormFieldState<List<V>>? state;
 
   _MultiSelectBottomSheetFieldView({
@@ -313,7 +314,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     this.checkColor,
     required this.isDismissible,
     this.listItemUI,
-    this.actionBarUI,
+    this.actionTopBarUI,
   });
 
   /// This constructor allows a FormFieldState to be passed in. Called by MultiSelectBottomSheetField.
@@ -356,7 +357,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         checkColor = field.checkColor,
         isDismissible = field.isDismissible,
         listItemUI = field.listItemUI,
-        actionBarUI = field.actionBarUI,
+        actionTopBarUI= field.actionTopBarUI,
         state = state;
 
   @override
@@ -489,7 +490,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             minChildSize: widget.minChildSize,
             maxChildSize: widget.maxChildSize,
             listItemUI: widget.listItemUI,
-            actionBarUI: widget.actionBarUI,
+            actionTopBarUI: widget.actionTopBarUI,
           );
         });
     // print(myVar.toString());
