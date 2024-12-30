@@ -119,7 +119,10 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   final bool isDismissible;
 
   final Widget Function(
-      MultiSelectItem<V>, Function(MultiSelectItem<V>, bool?))? listItemUI;
+    MultiSelectItem<V>,
+    int,
+    Function(MultiSelectItem<V>, bool?),
+  )? listItemUI;
 
   final Widget Function(Function, Function)? actionBarUI;
 
@@ -264,7 +267,10 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final Color? checkColor;
   final bool isDismissible;
   final Widget Function(
-      MultiSelectItem<V>, Function(MultiSelectItem<V>, bool?))? listItemUI;
+    MultiSelectItem<V>,
+    int,
+    Function(MultiSelectItem<V>, bool?),
+  )? listItemUI;
 
   final Widget Function(Function, Function)? actionBarUI;
   FormFieldState<List<V>>? state;

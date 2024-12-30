@@ -83,7 +83,10 @@ class MultiSelectBottomSheet<T> extends StatefulWidget
   final Color? checkColor;
 
   final Widget Function(
-      MultiSelectItem<T>, Function(MultiSelectItem<T>, bool?))? listItemUI;
+    MultiSelectItem<T>,
+    int,
+    Function(MultiSelectItem<T>, bool?),
+  )? listItemUI;
 
   final Widget Function(Function, Function)? actionBarUI;
 
@@ -165,7 +168,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
   }
 
   /// Returns a CheckboxListTile
-  Widget _buildListItem(MultiSelectItem<T> item) {
+  Widget _buildListItem(MultiSelectItem<T> item, int index) {
     CheckboxListTile listItem = CheckboxListTile(
       checkColor: widget.checkColor,
       value: item.selected,
@@ -189,7 +192,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
         unselectedWidgetColor: widget.unselectedColor ?? Colors.black54,
       ),
       child: widget.listItemUI != null
-          ? widget.listItemUI!(item, onChanged)
+          ? widget.listItemUI!(item, index, onChanged)
           : CheckboxListTile(
               checkColor: widget.checkColor,
               value: item.selected,
@@ -316,7 +319,7 @@ class _MultiSelectBottomSheetState<T> extends State<MultiSelectBottomSheet<T>> {
       controller: scrollController,
       itemCount: _items.length,
       itemBuilder: (context, index) {
-        return _buildListItem(_items[index]);
+        return _buildListItem(_items[index], index);
       },
     );
   }
