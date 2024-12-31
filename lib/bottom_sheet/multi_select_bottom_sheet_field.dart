@@ -13,7 +13,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
   final BoxDecoration? decoration;
 
   /// Style the Container that makes up the field error.
-  final BoxDecoration? erroDecoration;
+  final BoxDecoration? errorDecoration;
 
   /// Set text that is displayed on the button.
   final Text? buttonText;
@@ -140,7 +140,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
     this.buttonIcon,
     this.listType,
     this.decoration,
-    this.erroDecoration,
+    this.errorDecoration,
     this.onSelectionChanged,
     this.chipDisplay,
     this.initialValue = const [],
@@ -186,7 +186,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                   _MultiSelectBottomSheetFieldView<V>(
                 items: items,
                 decoration: decoration,
-                erroDecoration: erroDecoration,
+                errorDecoration: errorDecoration,
                 unselectedColor: unselectedColor,
                 colorator: colorator,
                 itemsTextStyle: itemsTextStyle,
@@ -221,7 +221,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
                 checkColor: checkColor,
                 isDismissible: isDismissible,
                 listItemUI: listItemUI,
-                actionTopBarUI:actionTopBarUI,
+                actionTopBarUI: actionTopBarUI,
               );
               return _MultiSelectBottomSheetFieldView<V?>._withState(
                   view as _MultiSelectBottomSheetFieldView<V?>, state);
@@ -231,7 +231,7 @@ class MultiSelectBottomSheetField<V> extends FormField<List<V>> {
 // ignore: must_be_immutable
 class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
   final BoxDecoration? decoration;
-  final BoxDecoration? erroDecoration;
+  final BoxDecoration? errorDecoration;
   final Text? buttonText;
   final Icon? buttonIcon;
   final List<MultiSelectItem<V>> items;
@@ -283,7 +283,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
     this.buttonIcon,
     this.listType,
     this.decoration,
-    this.erroDecoration,
+    this.errorDecoration,
     this.onSelectionChanged,
     this.onConfirm,
     this.chipDisplay,
@@ -326,7 +326,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         buttonIcon = field.buttonIcon,
         listType = field.listType,
         decoration = field.decoration,
-        erroDecoration = field.erroDecoration,
+        errorDecoration = field.errorDecoration,
         onSelectionChanged = field.onSelectionChanged,
         onConfirm = field.onConfirm,
         chipDisplay = field.chipDisplay,
@@ -357,7 +357,7 @@ class _MultiSelectBottomSheetFieldView<V> extends StatefulWidget {
         checkColor = field.checkColor,
         isDismissible = field.isDismissible,
         listItemUI = field.listItemUI,
-        actionTopBarUI= field.actionTopBarUI,
+        actionTopBarUI = field.actionTopBarUI,
         state = state;
 
   @override
@@ -400,50 +400,48 @@ class __MultiSelectBottomSheetFieldViewState<V>
       // if user has specified a chipDisplay, use its params
       if (widget.chipDisplay!.disabled!) {
         return Container();
-      } else {
-        return MultiSelectChipDisplay<V>(
-          items: chipDisplayItems,
-          colorator: widget.chipDisplay!.colorator ?? widget.colorator,
-          onTap: (item) {
-            List<V>? newValues;
-            if (widget.chipDisplay!.onTap != null) {
-              dynamic result = widget.chipDisplay!.onTap!(item);
-              if (result is List<V>) newValues = result;
-            }
-            if (newValues != null) {
-              _selectedItems = newValues;
-              if (widget.state != null) {
-                widget.state!.didChange(_selectedItems);
-              }
-            }
-          },
-          decoration: widget.chipDisplay!.decoration,
-          chipColor: widget.chipDisplay!.chipColor ??
-              ((widget.selectedColor != null &&
-                      widget.selectedColor != Colors.transparent)
-                  ? widget.selectedColor!.withOpacity(0.35)
-                  : null),
-          alignment: widget.chipDisplay!.alignment,
-          textStyle: widget.chipDisplay!.textStyle,
-          icon: widget.chipDisplay!.icon,
-          shape: widget.chipDisplay!.shape,
-          scroll: widget.chipDisplay!.scroll,
-          scrollBar: widget.chipDisplay!.scrollBar,
-          height: widget.chipDisplay!.height,
-          chipWidth: widget.chipDisplay!.chipWidth,
-        );
       }
-    } else {
-      // user didn't specify a chipDisplay, build the default
       return MultiSelectChipDisplay<V>(
         items: chipDisplayItems,
-        colorator: widget.colorator,
-        chipColor: (widget.selectedColor != null &&
-                widget.selectedColor != Colors.transparent)
-            ? widget.selectedColor!.withOpacity(0.35)
-            : null,
+        colorator: widget.chipDisplay!.colorator ?? widget.colorator,
+        onTap: (item) {
+          List<V>? newValues;
+          if (widget.chipDisplay!.onTap != null) {
+            dynamic result = widget.chipDisplay!.onTap!(item);
+            if (result is List<V>) newValues = result;
+          }
+          if (newValues != null) {
+            _selectedItems = newValues;
+            if (widget.state != null) {
+              widget.state!.didChange(_selectedItems);
+            }
+          }
+        },
+        decoration: widget.chipDisplay!.decoration,
+        chipColor: widget.chipDisplay!.chipColor ??
+            ((widget.selectedColor != null &&
+                    widget.selectedColor != Colors.transparent)
+                ? widget.selectedColor!.withOpacity(0.35)
+                : null),
+        alignment: widget.chipDisplay!.alignment,
+        textStyle: widget.chipDisplay!.textStyle,
+        icon: widget.chipDisplay!.icon,
+        shape: widget.chipDisplay!.shape,
+        scroll: widget.chipDisplay!.scroll,
+        scrollBar: widget.chipDisplay!.scrollBar,
+        height: widget.chipDisplay!.height,
+        chipWidth: widget.chipDisplay!.chipWidth,
       );
     }
+    // user didn't specify a chipDisplay, build the default
+    return MultiSelectChipDisplay<V>(
+      items: chipDisplayItems,
+      colorator: widget.colorator,
+      chipColor: (widget.selectedColor != null &&
+              widget.selectedColor != Colors.transparent)
+          ? widget.selectedColor!.withOpacity(0.35)
+          : null,
+    );
   }
 
   _showBottomSheet(BuildContext ctx) async {
@@ -494,7 +492,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
           );
         });
     // print(myVar.toString());
-    _selectedItems = myVar!;
+    // _selectedItems = myVar!; // when press outsite of bottom sheet, can't handle navigation.pop
   }
 
   Widget displayErrorUI() {
@@ -546,7 +544,7 @@ class __MultiSelectBottomSheetFieldViewState<V>
             width: 1.4,
           ),
         ),
-      ).merge(widget.erroDecoration);
+      ).merge(widget.errorDecoration);
       if (widget.state != null && widget.state!.hasError) {
         return defaultDecorationError;
       }
